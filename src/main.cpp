@@ -1,10 +1,5 @@
 #include <Arduino.h>
-
-#include <WiFiManager.h>
-#include <TFT_eSPI.h>
-#include <ArduinoJson.h>
-#include <HTTPClient.h>
-#include <ESP32Time.h>
+#include "WeatherStation.h"
 
 TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite sprite = TFT_eSprite(&tft);
