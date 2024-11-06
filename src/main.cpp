@@ -1,33 +1,13 @@
 #include <Arduino.h>
 #include "WeatherStation.h"
 
-TFT_eSPI tft = TFT_eSPI();
-TFT_eSprite sprite = TFT_eSprite(&tft);
 
-String timeServer = "https://worldtimeapi.org/api/ip";
-ESP32Time rtc(0); 
-
-unsigned long timePassed=0; // here we will store time passed
-
-struct DateTime {
-  int year;
-  int month;
-  int day;
-  int hour;
-  int minute;
-  int second;
-  long microsecond;
-  int offsetHours;
-  int offsetMinutes;
-};
-
-//convert this format 2024-08-07T20:43:55.697892+02:00  to varables 
+// convert this format 2024-11-06T10:46:59.2012025 to varables 
 DateTime parseISO8601(const String& iso8601) {
   DateTime dt;
-  sscanf(iso8601.c_str(), "%4d-%2d-%2dT%2d:%2d:%2d.%6ld%3d:%2d",
+  sscanf(iso8601.c_str(), "%4d-%2d-%2dT%2d:%2d:%2d.%7ld",
          &dt.year, &dt.month, &dt.day,
-         &dt.hour, &dt.minute, &dt.second, &dt.microsecond,
-         &dt.offsetHours, &dt.offsetMinutes);
+         &dt.hour, &dt.minute, &dt.second, &dt.microsecond);
   return dt;
 }
 
@@ -60,7 +40,8 @@ void getTime()
       StaticJsonDocument<1024> doc;
       DeserializationError error = deserializeJson(doc, payload);
       if (!error) {
-      const char* datetime = doc["datetime"];
+      const char* datetime = doc["dateTime"];
+    
       DateTime dt = parseISO8601(String(datetime));  
 
   Serial.print("Year: "); Serial.println(dt.year);
@@ -87,7 +68,7 @@ void setup() {
     WiFiManager wifiManager;
     wifiManager.setConfigPortalTimeout(5000);
 
-    if(!wifiManager.autoConnect("VolosWifiConf","password")) {
+    if(!wifiManager.autoConnect("DefineWifiConf","password")) {
         Serial.println("Failed to connect and hit timeout");
         delay(3000);
         ESP.restart();
