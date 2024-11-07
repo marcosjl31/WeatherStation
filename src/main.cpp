@@ -37,7 +37,7 @@ void getTime()
     }
     http.end();
 
-      StaticJsonDocument<1024> doc;
+      JsonDocument doc;
       DeserializationError error = deserializeJson(doc, payload);
       if (!error) {
       const char* datetime = doc["dateTime"];
