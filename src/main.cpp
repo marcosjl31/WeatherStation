@@ -68,6 +68,13 @@ void setup() {
     WiFiManager wifiManager;
     wifiManager.setConfigPortalTimeout(5000);
 
+    IPAddress _ip,_gw,_mask;
+    _ip.fromString(static_ip);
+    _gw.fromString(static_gw);
+    _mask.fromString(static_mask);
+
+    wifiManager.setSTAStaticIPConfig(_ip,_gw,_mask);
+
     if(!wifiManager.autoConnect("DefineWifiConf","password")) {
         Serial.println("Failed to connect and hit timeout");
         delay(3000);
