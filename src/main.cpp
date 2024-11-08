@@ -73,6 +73,8 @@ void setup() {
     _gw.fromString(static_gw);
     _mask.fromString(static_mask);
 
+    wifiManager.setHostname(staHostname);
+
     wifiManager.setSTAStaticIPConfig(_ip,_gw,_mask);
 
     if(!wifiManager.autoConnect("DefineWifiConf","password")) {

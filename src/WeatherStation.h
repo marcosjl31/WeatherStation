@@ -13,6 +13,7 @@
 TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite sprite = TFT_eSprite(&tft);
 
+String staHostname = "WeatherStation";
 // [Please CHANGE THIS] - Custom Static adress for the Weather Station
 char static_ip[16] = "192.168.3.10";
 char static_gw[16] = "192.168.3.1";
