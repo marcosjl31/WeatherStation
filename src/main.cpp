@@ -68,14 +68,15 @@ void setup() {
     WiFiManager wifiManager;
     wifiManager.setConfigPortalTimeout(5000);
 
-    IPAddress _ip,_gw,_mask;
+    IPAddress _ip,_gw,_mask,_dns;
     _ip.fromString(static_ip);
     _gw.fromString(static_gw);
     _mask.fromString(static_mask);
+    _dns.fromString(static_dns);
 
-    wifiManager.setHostname(staHostname);
+    wifiManager.setSTAStaticIPConfig(_ip,_gw,_mask,_dns);
 
-    wifiManager.setSTAStaticIPConfig(_ip,_gw,_mask);
+    wifiManager.setHostname(staHostname);      // Not sure it"s usefull to configure hostname.
 
     if(!wifiManager.autoConnect("DefineWifiConf","password")) {
         Serial.println("Failed to connect and hit timeout");
