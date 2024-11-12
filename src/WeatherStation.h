@@ -13,13 +13,14 @@
 TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite sprite = TFT_eSprite(&tft);
 
-String staHostname = "WeatherStation";
+String staHostname = "WeatherStation";      // Not sure it"s usefull to configure hostname.
 // [Please CHANGE THIS] - Custom Static adress for the Weather Station
 char static_ip[16] = "192.168.3.10";
 char static_gw[16] = "192.168.3.1";
 char static_mask[16] = "255.255.255.0";
+char static_dns[16] = "192.168.3.1";
 
-// [Please CHANGE THIS] - API Rest server url of TempSensor (change the IP address!)
+// [Please CHANGE THIS] - API Rest server url of TempSensor (change the IP address if needed!)
 String tempSensorServer = "http://192.168.3.11/data";
 
 
