@@ -9,6 +9,8 @@
 #include <HTTPClient.h>
 #include <ESP32Time.h>
 
+#define VW_Version "v. 0.01"
+
 // Objects to manipulate display
 TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite sprite = TFT_eSprite(&tft);
