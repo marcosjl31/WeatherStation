@@ -8,28 +8,6 @@ sensorData  fromSensor;
 //--- Time object
 auto timer = timer_create_default();
 
-bool getTime(void *) {
-  Serial.println("---> In getTime");
-  return true;
-} 
-
-bool getSensor(void *) {
-  Serial.println("---> In getSensor");
-  if (fromSensor.is_update) {
-    // New values have been posted, display them
-    Serial.print("Temp:"); Serial.println(fromSensor.t);
-    Serial.print("Humi:"); Serial.println(fromSensor.h);
-    Serial.print("Batt:"); Serial.println(fromSensor.b);
-    fromSensor.is_update = false;
-  }
-  return true;
-} 
-
-bool getForecast(void *) {
-  Serial.println("---> In getForecast");
-  return true;
-}
-
 void setup() {
   Serial.begin(115200);
   while (!Serial) {}; 
@@ -66,6 +44,70 @@ void loop() {
   timer.tick();
 }
 
+//--- getInternet Time From API server and set RTC time.
+DateTime parseISO8601(const String& iso8601) {
+  DateTime dt;
+  sscanf(iso8601.c_str(), "%4d-%2d-%2dT%2d:%2d:%2d.%7ld",
+         &dt.year, &dt.month, &dt.day,
+         &dt.hour, &dt.minute, &dt.second, &dt.microsecond);
+  return dt;
+}
+
+bool getTime(void *) {
+  HTTPClient http;
+  int httpResponseCode;
+  JsonDocument jsonDoc;
+  String payload;
+  DeserializationError error;
+  const char * datetime;
+  DateTime dt;
+
+  Serial.println("---> In getTime");
+  http.begin(timeServer);
+  httpResponseCode = http.GET();
+  if (httpResponseCode > 0){
+    payload = http.getString();
+    Serial.println(httpResponseCode);
+    Serial.println(payload);
+  } else {
+    Serial.print("ERROR: bad HTTP1 request: ");
+    Serial.println(httpResponseCode);
+  }
+
+  error = deserializeJson(jsonDoc,payload);
+  if (!error) {
+    datetime = jsonDoc["dateTime"];
+    dt = parseISO8601(String(datetime));
+    Serial.println("DEBUG:");
+    Serial.print("Year: "); Serial.println(dt.year);
+    Serial.print("Month: "); Serial.println(dt.month);
+    Serial.print("Day: "); Serial.println(dt.day);
+    Serial.print("Hour: "); Serial.println(dt.hour);
+    Serial.print("Minute: "); Serial.println(dt.minute);
+    Serial.print("Second: "); Serial.println(dt.second);
+
+    rtc.setTime(dt.second, dt.minute, dt.hour, dt.day, dt.month, dt.year);
+  }
+  return true;
+} 
+
+bool getSensor(void *) {
+  Serial.println("---> In getSensor");
+  if (fromSensor.is_update) {
+    // New values have been posted, display them
+    Serial.print("Temp:"); Serial.println(fromSensor.t);
+    Serial.print("Humi:"); Serial.println(fromSensor.h);
+    Serial.print("Batt:"); Serial.println(fromSensor.b);
+    fromSensor.is_update = false;
+  }
+  return true;
+} 
+
+bool getForecast(void *) {
+  Serial.println("---> In getForecast");
+  return true;
+}
+
 //--- setup and launch ReST API web server
 void setupApi() {
   server.on("/post-data", HTTP_POST, handlePost);
@@ -79,7 +121,7 @@ void setupApi() {
 void handlePost() {
   JsonDocument jsonDoc;
   char buffer[128];
-  String body;
+  String payload;
 
   if (server.hasArg("plain") == false) {
     jsonDoc.clear();
@@ -89,8 +131,8 @@ void handlePost() {
     
     server.send(200,"application/json",buffer);
   } else {
-    body = server.arg("plain");
-    deserializeJson(jsonDoc,body);
+    payload = server.arg("plain");
+    deserializeJson(jsonDoc,payload);
 
     // store received data
     fromSensor.t = jsonDoc["temperature"];

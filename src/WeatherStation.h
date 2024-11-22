@@ -53,6 +53,10 @@ struct DateTime {
 };
 
 // forward declarations
+bool getTime(void *);
+DateTime parseISO8601(const String& iso8601);
+bool getSensor(void *);
+bool getForecast(void *);
 void setupApi();
 void handlePost();
 
