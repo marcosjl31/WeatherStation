@@ -33,6 +33,7 @@ void setup() {
 
   Serial.println("INFO: connected to WiFi");
 
+  setupApi();
 
   //--- Create Timers for main Weather Station functions
   timer.every(15000,getTime);              // Every 15s
@@ -41,6 +42,7 @@ void setup() {
 }
 
 void loop() {
+  server.handleClient();
   timer.tick();
 }
 
@@ -110,6 +112,7 @@ bool getForecast(void *) {
 
 //--- setup and launch ReST API web server
 void setupApi() {
+  Serial.println("INFO: Web server started");
   server.on("/post-data", HTTP_POST, handlePost);
 
   // start Web server
