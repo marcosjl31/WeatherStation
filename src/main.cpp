@@ -34,8 +34,16 @@ void setup() {
   Serial.println("INFO: connected to WiFi");
 
   setupApi();
+  getTime(NULL);
+
+  //--- Initialize display
+  tft.init();
+  tft.setRotation(0);
+  tft.fillScreen(TFT_BLACK);
+  sprite.createSprite(240,320);
 
   //--- Create Timers for main Weather Station functions
+  timer.every(500,drawTime);               // Every 500ms, display time
   timer.every(15000,getTime);              // Every 15s
   timer.every(30000,getSensor);            // Every 30s
   timer.every(60000,getForecast);          // Every 60s
@@ -146,4 +154,17 @@ void handlePost() {
     server.send(200, "application/json", "{}");
 
   } 
+}
+
+//--- Drawing functions
+bool drawTime(void *){
+  Serial.println("--> In drawTime");
+  sprite.fillSprite(TFT_BLACK);
+  Serial.println("loading font");
+  sprite.loadFont(ArialRoundedMTBold_14);
+  Serial.println("font loaded");
+  sprite.setTextDatum(4);
+  sprite.drawString("ESP32",120,160);
+  sprite.pushSprite(0,0);
+  return true;
 }

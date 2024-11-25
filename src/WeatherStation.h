@@ -9,6 +9,7 @@
 #include <ArduinoJson.h>
 #include <HTTPClient.h>
 #include <ESP32Time.h>
+#include "ArialRounded.h"
 
 #define VW_Version "v. 0.01"
 
@@ -53,6 +54,7 @@ struct DateTime {
 };
 
 // forward declarations
+bool drawTime(void *);
 bool getTime(void *);
 DateTime parseISO8601(const String& iso8601);
 bool getSensor(void *);
