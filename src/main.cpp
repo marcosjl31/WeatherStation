@@ -161,7 +161,7 @@ bool drawTime(void *){
   Serial.println("--> In drawTime");
   sprite.fillSprite(TFT_BLACK);
   Serial.println("loading font");
-  sprite.loadFont(ArialRoundedMTBold_14);
+  sprite.loadFont(arialround14);
   Serial.println("font loaded");
   sprite.setTextDatum(4);
   sprite.drawString("ESP32",120,160);

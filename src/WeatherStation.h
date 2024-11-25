@@ -9,7 +9,8 @@
 #include <ArduinoJson.h>
 #include <HTTPClient.h>
 #include <ESP32Time.h>
-#include "ArialRounded.h"
+#include "ArialRounded14.h"
+#include "ArialRounded36.h"
 
 #define VW_Version "v. 0.01"
 
