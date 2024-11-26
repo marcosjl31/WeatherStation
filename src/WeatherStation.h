@@ -42,6 +42,8 @@ WebServer server(80);
 
 // API Web server for accurate time getTime.
 String timeServer = "https://timeapi.io/api/time/current/zone?timeZone=Europe%2FParis";
+const char *days[] = {"DIM","LUN","MAR","MER","JEU","VEN","SAM"};
+const char *months[] = {"JAN","FEV","MAR","AVR","MAI","JUN","JUL","AOU","SEP","OCT","NOV","DEC"};
 ESP32Time rtc(0); 
 
 struct DateTime {
@@ -58,6 +60,7 @@ struct DateTime {
 bool drawTime(void *);
 bool getTime(void *);
 DateTime parseISO8601(const String& iso8601);
+String toFrench(String englishDay);
 bool getSensor(void *);
 bool getForecast(void *);
 void setupApi();

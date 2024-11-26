@@ -36,12 +36,15 @@ void setup() {
   setupApi();
   getTime(NULL);
 
+  //--- Tempo pour les tests hors maison
+  rtc.setTime(17, 0, 12, 26, 11, 2024);
+
   //--- Initialize display
   tft.init();
-  tft.setRotation(0);
+  tft.setRotation(1);
   tft.fillScreen(TFT_BLACK);
-  sprite.createSprite(240,320);
-
+  sprite.createSprite(320,240);
+  
   //--- Create Timers for main Weather Station functions
   timer.every(500,drawTime);               // Every 500ms, display time
   timer.every(15000,getTime);              // Every 15s
@@ -62,6 +65,19 @@ DateTime parseISO8601(const String& iso8601) {
          &dt.hour, &dt.minute, &dt.second, &dt.microsecond);
   return dt;
 }
+
+String toFrench(String englishDay) {
+  String tempo;
+  if (englishDay == "Monday") return "LUN";
+  if (englishDay == "Tuesday") return "MAR";
+  if (englishDay == "Wednesday") return "MER";
+  if (englishDay == "Thursday") return "JEU";
+  if (englishDay == "Friday") return "VEN";
+  if (englishDay == "Saturday") return "SAM";
+  if (englishDay == "Sunday") return "DIM";
+  return "???";
+}
+
 
 bool getTime(void *) {
   HTTPClient http;
@@ -157,14 +173,26 @@ void handlePost() {
 }
 
 //--- Drawing functions
-bool drawTime(void *){
-  Serial.println("--> In drawTime");
-  sprite.fillSprite(TFT_BLACK);
-  Serial.println("loading font");
-  sprite.loadFont(arialround14);
-  Serial.println("font loaded");
-  sprite.setTextDatum(4);
-  sprite.drawString("ESP32",120,160);
-  sprite.pushSprite(0,0);
+bool drawTime(void *) {
+  struct tm now;
+  int dw;
+  char tempo[20];
+  TFT_eSprite spr = TFT_eSprite(&tft);
+
+  spr.createSprite(320,50);
+  spr.fillSprite(TFT_BLACK);
+  now = rtc.getTimeStruct();
+  dw = rtc.getDayofWeek();
+
+  spr.loadFont(arialround14);
+  spr.setTextDatum(MC_DATUM);
+  
+  sprintf(tempo,"%s %02d %s %4d",days[dw],now.tm_mday,months[now.tm_mon],(now.tm_year+1900));
+  spr.drawString(tempo,160,10);
+  sprintf(tempo,"%02d:%02d:%02d",now.tm_hour,now.tm_min,now.tm_sec);
+  spr.loadFont(arialround36);
+  spr.drawString(tempo,160,40);
+  spr.pushSprite(0,0);
+
   return true;
 }
