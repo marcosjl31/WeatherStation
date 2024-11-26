@@ -33,12 +33,12 @@ char static_ip[16] = "192.168.3.10";
 char static_gw[16] = "192.168.3.1";
 char static_mask[16] = "255.255.255.0";
 char static_dns[16] = "192.168.3.1";
+// [Please CHANGE THIS] - Town/Latitude/longitude
+const String townName = "Toulouse";
+const String townLat = "43.603951";
+const String townLon = "1.444510";
 
 WebServer server(80);
-
-// Json var to handle JSON deserialization either of API request (POST from Temp Sensor)
-// or getting time from Internet.
-
 
 // API Web server for accurate time getTime.
 String timeServer = "https://timeapi.io/api/time/current/zone?timeZone=Europe%2FParis";
