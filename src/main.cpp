@@ -37,7 +37,7 @@ void setup() {
   getTime(NULL);
 
   //--- Tempo pour les tests hors maison
-  rtc.setTime(17, 0, 12, 26, 11, 2024);
+  // rtc.setTime(17, 0, 12, 26, 11, 2024);
 
   //--- Initialize display
   tft.init();
