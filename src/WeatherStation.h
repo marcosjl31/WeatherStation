@@ -60,7 +60,6 @@ struct DateTime {
 bool drawTime(void *);
 bool getTime(void *);
 DateTime parseISO8601(const String& iso8601);
-String toFrench(String englishDay);
 bool getSensor(void *);
 bool getForecast(void *);
 void setupApi();

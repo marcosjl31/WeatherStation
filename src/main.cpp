@@ -47,7 +47,7 @@ void setup() {
   
   //--- Create Timers for main Weather Station functions
   timer.every(500,drawTime);               // Every 500ms, display time
-  timer.every(15000,getTime);              // Every 15s
+  timer.every(15*60*1000,getTime);              // Every 15mn
   timer.every(30000,getSensor);            // Every 30s
   timer.every(60000,getForecast);          // Every 60s
 }
@@ -56,7 +56,6 @@ void loop() {
   server.handleClient();
   timer.tick();
 }
-
 //--- getInternet Time From API server and set RTC time.
 DateTime parseISO8601(const String& iso8601) {
   DateTime dt;
@@ -65,19 +64,6 @@ DateTime parseISO8601(const String& iso8601) {
          &dt.hour, &dt.minute, &dt.second, &dt.microsecond);
   return dt;
 }
-
-String toFrench(String englishDay) {
-  String tempo;
-  if (englishDay == "Monday") return "LUN";
-  if (englishDay == "Tuesday") return "MAR";
-  if (englishDay == "Wednesday") return "MER";
-  if (englishDay == "Thursday") return "JEU";
-  if (englishDay == "Friday") return "VEN";
-  if (englishDay == "Saturday") return "SAM";
-  if (englishDay == "Sunday") return "DIM";
-  return "???";
-}
-
 
 bool getTime(void *) {
   HTTPClient http;
@@ -88,13 +74,12 @@ bool getTime(void *) {
   const char * datetime;
   DateTime dt;
 
-  Serial.println("---> In getTime");
   http.begin(timeServer);
   httpResponseCode = http.GET();
   if (httpResponseCode > 0){
     payload = http.getString();
-    Serial.println(httpResponseCode);
-    Serial.println(payload);
+    // Serial.println(httpResponseCode);
+    // Serial.println(payload);
   } else {
     Serial.print("ERROR: bad HTTP1 request: ");
     Serial.println(httpResponseCode);
@@ -104,14 +89,6 @@ bool getTime(void *) {
   if (!error) {
     datetime = jsonDoc["dateTime"];
     dt = parseISO8601(String(datetime));
-    Serial.println("DEBUG:");
-    Serial.print("Year: "); Serial.println(dt.year);
-    Serial.print("Month: "); Serial.println(dt.month);
-    Serial.print("Day: "); Serial.println(dt.day);
-    Serial.print("Hour: "); Serial.println(dt.hour);
-    Serial.print("Minute: "); Serial.println(dt.minute);
-    Serial.print("Second: "); Serial.println(dt.second);
-
     rtc.setTime(dt.second, dt.minute, dt.hour, dt.day, dt.month, dt.year);
   }
   return true;
@@ -164,7 +141,7 @@ void handlePost() {
     // store received data
     fromSensor.t = jsonDoc["temperature"];
     fromSensor.h = jsonDoc["humidity"];
-    fromSensor.b = jsonDoc["battery"];
+    fromSensor.b = jsonDoc["batt_per"];
     fromSensor.is_update = true;
 
     server.send(200, "application/json", "{}");
