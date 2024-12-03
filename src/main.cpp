@@ -35,15 +35,23 @@ void setup() {
 
   setupApi();
   getTime(NULL);
-
-  //--- Tempo pour les tests hors maison
-  // rtc.setTime(17, 0, 12, 26, 11, 2024);
+  
 
   //--- Initialize display
   tft.init();
   tft.setRotation(1);
-  tft.fillScreen(TFT_BLACK);
-  sprite.createSprite(320,240);
+  tft.fillScreen(WS_BLACK);
+
+  //--- Tempo pour les tests hors maison
+  rtc.setTime(17, 0, 12, 26, 11, 2024);
+
+  fromSensor.t = 11.1; // set dummy values for first time display
+  fromSensor.h = 22.2;
+  fromSensor.b = 100;
+  fromSensor.is_update = true;
+
+  getSensor(NULL);
+  getForecast(NULL);
   
   //--- Create Timers for main Weather Station functions
   timer.every(500,drawTime);               // Every 500ms, display time
@@ -96,19 +104,46 @@ bool getTime(void *) {
 } 
 
 bool getSensor(void *) {
-  Serial.println("---> In getSensor");
+  char tempo[10];
+    
   if (fromSensor.is_update) {
-    // New values have been posted, display them
-    Serial.print("Temp:"); Serial.println(fromSensor.t);
-    Serial.print("Humi:"); Serial.println(fromSensor.h);
-    Serial.print("Batt:"); Serial.println(fromSensor.b);
+    Serial.println("---> New valid data for sensor was read");
     fromSensor.is_update = false;
+
+    sprite.createSprite(200,150);
+    sprite.fillSprite(WS_BLACK);
+    sprite.setTextColor(WS_BLUE);
+
+    sprite.loadFont(arialround14);
+    sprite.setTextDatum(CR_DATUM);
+    sprite.drawString(townName,190,20);
+
+
+    // display Temp & Humi
+    sprite.loadFont(arialround36);
+    sprite.setTextColor(WS_WHITE);
+    sprintf(tempo,"%2d °C",int(fromSensor.t+0.5));
+    sprite.setTextDatum(MC_DATUM);
+    sprite.drawString(tempo,95,75);
+    sprite.loadFont(arialround14);
+    sprintf(tempo,"%2d %%",int(fromSensor.h+0.5));
+    sprite.drawString(tempo,95,110);
+
+    // display batt level
+    drawBatLevel(sprite,160,60,int(fromSensor.b+0.5));
+
+    sprite.pushSprite(120,50);
+    sprite.deleteSprite();
   }
   return true;
 } 
 
 bool getForecast(void *) {
   Serial.println("---> In getForecast");
+
+  // get forecast
+
+  
   return true;
 }
 
@@ -155,22 +190,45 @@ bool drawTime(void *) {
   struct tm now;
   int dw;
   char tempo[20];
-  TFT_eSprite spr = TFT_eSprite(&tft);
 
-  spr.createSprite(320,50);
-  spr.fillSprite(TFT_BLACK);
+  sprite.createSprite(320,50);
+  sprite.fillSprite(WS_BLACK);
+  sprite.setTextColor(WS_WHITE);
   now = rtc.getTimeStruct();
   dw = rtc.getDayofWeek();
 
-  spr.loadFont(arialround14);
-  spr.setTextDatum(MC_DATUM);
+  sprite.loadFont(arialround14);
+  sprite.setTextDatum(MC_DATUM);
   
   sprintf(tempo,"%s %02d %s %4d",days[dw],now.tm_mday,months[now.tm_mon],(now.tm_year+1900));
-  spr.drawString(tempo,160,10);
+  sprite.drawString(tempo,160,10);
   sprintf(tempo,"%02d:%02d:%02d",now.tm_hour,now.tm_min,now.tm_sec);
-  spr.loadFont(arialround36);
-  spr.drawString(tempo,160,40);
-  spr.pushSprite(0,0);
+  sprite.loadFont(arialround36);
+  sprite.drawString(tempo,160,40);
+  sprite.pushSprite(0,0);
+
+  sprite.deleteSprite();
 
   return true;
+}
+
+void drawBatLevel(TFT_eSprite &spr,int sprX,int sprY,int level) {
+  spr.drawFastVLine(sprX,sprY,58,WS_WHITE);
+  spr.drawFastVLine(sprX+30,sprY,58,WS_WHITE);
+  spr.drawFastVLine(sprX+10,sprY-4,4,WS_WHITE);
+  spr.drawFastVLine(sprX+20,sprY-4,4,WS_WHITE);
+  spr.drawFastHLine(sprX,sprY,10,WS_WHITE);
+  spr.drawFastHLine(sprX+10,sprY-4,10,WS_WHITE);
+  spr.drawFastHLine(sprX+20,sprY,10,WS_WHITE);
+  spr.drawFastHLine(sprX,sprY+58,30,WS_WHITE);
+
+  if (level > 85) 
+    spr.fillRect(sprX+2,sprY+2,27,10,TFT_GREEN);
+  if (level > 65)
+    spr.fillRect(sprX+2,sprY+13,27,10,TFT_GREEN);
+  if (level > 45) 
+    spr.fillRect(sprX+2,sprY+24,27,10,TFT_GREEN);
+  if (level > 25)
+    spr.fillRect(sprX+2,sprY+35,27,10,TFT_ORANGE);
+  spr.fillRect(sprX+2,sprY+46,27,10,TFT_RED);
 }

@@ -55,9 +55,14 @@ struct DateTime {
   int second;
   long microsecond;
 };
+#define WS_BLACK TFT_BLACK
+#define WS_WHITE TFT_WHITE
+#define WS_YELLOW TFT_YELLOW
+#define WS_BLUE 0x7E3C
 
 // forward declarations
 bool drawTime(void *);
+void drawBatLevel(TFT_eSprite &spr,int sprX,int SprY,int level);
 bool getTime(void *);
 DateTime parseISO8601(const String& iso8601);
 bool getSensor(void *);
