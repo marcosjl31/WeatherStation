@@ -188,15 +188,15 @@ void handlePost() {
 }
 
 //--- return PROGMEM iconname from wmo code
-const char* getIconFromWMO(int wmo) {
+const uint16_t* getIconFromWMO(int wmo) {
   if (wmo == 0) return sunny;
-  if (wmo == 1) return partlysunny;
+  if (wmo == 1) return mainlysunny;
   if (wmo == 2) return partlycloudy;
-  if (wmo == 3) return mostlycloudy;
+  if (wmo == 3) return cloudy;
   if (wmo == 45 || wmo == 48) return fog;
   if ((wmo >= 51 && wmo <= 67) || (wmo >= 80 && wmo <= 82)) return rain;
   if (wmo == 85 || wmo == 86) return snow;
-  if (wmo >= 95 && wmo <= 99) return tstorms;
+  if (wmo >= 95 && wmo <= 99) return storms;
   return unknown;
 }
 
@@ -252,10 +252,11 @@ void drawForecast() {
   char tempo[10];
 
   sprite.createSprite(150,150);   // icon sprite
+  sprite.setSwapBytes(true);
   sprite.fillSprite(WS_BLACK);
   // Cf. exemple : Sprite_image_4bit de la lib TFT
   
-  sprite.pushImage(10,10,100,100,(uint16_t *)getIconFromWMO(3));
+  sprite.pushImage(15,15,128,128,getIconFromWMO(0));
   
   sprite.pushSprite(0,50);
   sprite.deleteSprite();
