@@ -143,7 +143,9 @@ bool getForecast(void *) {
 
   // get forecast
 
-  
+  // display forecast
+  drawForecast();
+
   return true;
 }
 
@@ -183,6 +185,19 @@ void handlePost() {
     server.send(200, "application/json", "{}");
 
   } 
+}
+
+//--- return PROGMEM iconname from wmo code
+const char* getIconFromWMO(int wmo) {
+  if (wmo == 0) return sunny;
+  if (wmo == 1) return partlysunny;
+  if (wmo == 2) return partlycloudy;
+  if (wmo == 3) return mostlycloudy;
+  if (wmo == 45 || wmo == 48) return fog;
+  if ((wmo >= 51 && wmo <= 67) || (wmo >= 80 && wmo <= 82)) return rain;
+  if (wmo == 85 || wmo == 86) return snow;
+  if (wmo >= 95 && wmo <= 99) return tstorms;
+  return unknown;
 }
 
 //--- Drawing functions
@@ -231,4 +246,22 @@ void drawBatLevel(TFT_eSprite &spr,int sprX,int sprY,int level) {
   if (level > 25)
     spr.fillRect(sprX+2,sprY+35,27,10,TFT_ORANGE);
   spr.fillRect(sprX+2,sprY+46,27,10,TFT_RED);
+}
+
+void drawForecast() {
+  char tempo[10];
+
+  sprite.createSprite(150,150);   // icon sprite
+  sprite.fillSprite(WS_BLACK);
+  // Cf. exemple : Sprite_image_4bit de la lib TFT
+  
+  sprite.pushImage(10,10,100,100,(uint16_t *)getIconFromWMO(3));
+  
+  sprite.pushSprite(0,50);
+  sprite.deleteSprite();
+
+  sprite.createSprite(320,50);    // text sprite (bottom display for weather condition, min/max temp and rain %)
+
+  sprite.pushSprite(0,200);
+  sprite.deleteSprite();
 }

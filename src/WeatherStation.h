@@ -11,6 +11,7 @@
 #include <ESP32Time.h>
 #include "ArialRounded14.h"
 #include "ArialRounded36.h"
+#include "weatherIcons.h"
 
 #define VW_Version "v. 0.01"
 
@@ -63,6 +64,8 @@ struct DateTime {
 // forward declarations
 bool drawTime(void *);
 void drawBatLevel(TFT_eSprite &spr,int sprX,int SprY,int level);
+void drawForecast();
+const char* getIconFromWMO(int wmo);
 bool getTime(void *);
 DateTime parseISO8601(const String& iso8601);
 bool getSensor(void *);
