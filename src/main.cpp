@@ -35,7 +35,6 @@ void setup() {
 
   setupApi();
   getTime(NULL);
-  
 
   //--- Initialize display
   tft.init();
@@ -47,9 +46,11 @@ void setup() {
 
   fromSensor.t = 11.1; // set dummy values for first time display
   fromSensor.h = 22.2;
-  fromSensor.b = 100;
+  fromSensor.b = 74.4;
   fromSensor.is_update = true;
+  //--------------------------------------
 
+  drawTime(NULL);
   getSensor(NULL);
   getForecast(NULL);
   
@@ -139,12 +140,37 @@ bool getSensor(void *) {
 } 
 
 bool getForecast(void *) {
-  Serial.println("---> In getForecast");
+  HTTPClient http;
+  int httpResponseCode;
+  JsonDocument jsonDoc;
+  String payload;
+  DeserializationError error;
+  float minT, maxT;
+  int rainProba;
+  int wmoCode;
 
   // get forecast
+  http.begin(weatherServer);
+  httpResponseCode = http.GET();
+  if (httpResponseCode > 0){
+    payload = http.getString();
+    // Serial.println(httpResponseCode);
+    // Serial.println(payload);
+  } else{
+    Serial.print("ERROR: bad HTTP1 request: ");
+    Serial.println(httpResponseCode);
+  }
 
-  // display forecast
-  drawForecast();
+  error = deserializeJson(jsonDoc,payload);
+  if (!error) {
+    wmoCode = jsonDoc["dayly.weather_code[0]"];
+    minT = jsonDoc["dayly.temperature_2m_min[0]"];
+    maxT = jsonDoc["dayly.temperature_2m_max[0]"];
+    rainProba = jsonDoc["dayly.precipitation_probability_max[0]"];
+
+    // display forecast 
+    drawForecast(wmoCode,minT,maxT,rainProba);
+  }
 
   return true;
 }
@@ -194,10 +220,31 @@ const uint16_t* getIconFromWMO(int wmo) {
   if (wmo == 2) return partlycloudy;
   if (wmo == 3) return cloudy;
   if (wmo == 45 || wmo == 48) return fog;
-  if ((wmo >= 51 && wmo <= 67) || (wmo >= 80 && wmo <= 82)) return rain;
+  if (wmo == 51 || wmo == 61 || wmo == 80 || wmo == 83) return lightrain;
+  if (wmo == 53 || wmo == 55 || wmo == 63 || wmo == 65) return rain;
+  if (wmo == 56 || wmo == 57 || wmo == 66 || wmo == 67) return freezingrain;
+  if (wmo == 71) return lightsnow;
+  if (wmo == 73 || wmo == 75 || wmo == 77) return snow;
   if (wmo == 85 || wmo == 86) return snow;
   if (wmo >= 95 && wmo <= 99) return storms;
   return unknown;
+}
+
+// return Short Weather Description from WMO code
+String getDescriptionFromWMO(int wmo) {
+  if (wmo == 0) return "Ensoleillé";
+  if (wmo == 1) return "Plutôt ensoleillé";
+  if (wmo == 2) return "Plutôt couvert";
+  if (wmo == 3) return "Nuageux";
+  if (wmo == 45 || wmo == 48) return "Brouillard";
+  if (wmo == 51 || wmo == 61 || wmo == 80 || wmo == 83) return "Légères averses";
+  if (wmo == 53 || wmo == 55 || wmo == 63 || wmo == 65) return "Pluie";
+  if (wmo == 56 || wmo == 57 || wmo == 66 || wmo == 67) return "Pluie verglaçante";
+  if (wmo == 71) return "Averses de neige";
+  if (wmo == 73 || wmo == 75 || wmo == 77) return "Neige";
+  if (wmo == 85 || wmo == 86) return "Neige";
+  if (wmo >= 95 && wmo <= 99) return "orages";
+  return "";
 }
 
 //--- Drawing functions
@@ -248,7 +295,7 @@ void drawBatLevel(TFT_eSprite &spr,int sprX,int sprY,int level) {
   spr.fillRect(sprX+2,sprY+46,27,10,TFT_RED);
 }
 
-void drawForecast() {
+void drawForecast(int wmo, float minT, float maxT, short rainProba) {
   char tempo[10];
 
   sprite.createSprite(150,150);   // icon sprite
@@ -256,13 +303,28 @@ void drawForecast() {
   sprite.fillSprite(WS_BLACK);
   // Cf. exemple : Sprite_image_4bit de la lib TFT
   
-  sprite.pushImage(15,15,128,128,getIconFromWMO(0));
+  sprite.pushImage(15,15,128,128,getIconFromWMO(wmo));
   
-  sprite.pushSprite(0,50);
+  sprite.pushSprite(0,45);
   sprite.deleteSprite();
 
-  sprite.createSprite(320,50);    // text sprite (bottom display for weather condition, min/max temp and rain %)
+  sprite.createSprite(320,55);    // text sprite (bottom display for weather condition, min/max temp and rain %)
+  sprite.fillSprite(WS_BLACK);
+  sprite.setTextColor(WS_YELLOW);
+  sprite.loadFont(arialround36);
+  sprite.setTextDatum(CR_DATUM);
+  sprite.drawString(getDescriptionFromWMO(wmo),315,18);
+  sprite.setTextColor(WS_BLUE);
+  sprite.loadFont(arialround14);
+  sprintf(tempo,"Pluie %2d %%",rainProba);
+  sprite.drawString(tempo,315,45);
+  sprintf(tempo,"Min %4.1f °C",minT);
+  sprite.setTextDatum(CL_DATUM);
+  sprite.drawString(tempo,5,45);
+  sprintf(tempo,"Max %4.1f °C",maxT);
+  sprite.setTextDatum(MC_DATUM);
+  sprite.drawString(tempo,160,45);
 
-  sprite.pushSprite(0,200);
+  sprite.pushSprite(0,185);
   sprite.deleteSprite();
 }

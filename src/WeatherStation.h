@@ -43,6 +43,7 @@ WebServer server(80);
 
 // API Web server for accurate time getTime.
 String timeServer = "https://timeapi.io/api/time/current/zone?timeZone=Europe%2FParis";
+String weatherServer = "";
 const char *days[] = {"DIM","LUN","MAR","MER","JEU","VEN","SAM"};
 const char *months[] = {"JAN","FEV","MAR","AVR","MAI","JUN","JUL","AOU","SEP","OCT","NOV","DEC"};
 ESP32Time rtc(0); 
@@ -64,8 +65,9 @@ struct DateTime {
 // forward declarations
 bool drawTime(void *);
 void drawBatLevel(TFT_eSprite &spr,int sprX,int SprY,int level);
-void drawForecast();
+void drawForecast(int wmo, float minT, float maxT, short rainProba);
 const uint16_t* getIconFromWMO(int wmo);
+String getDescriptionFromWMO(int wmo);
 bool getTime(void *);
 DateTime parseISO8601(const String& iso8601);
 bool getSensor(void *);
