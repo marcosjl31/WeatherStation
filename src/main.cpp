@@ -105,36 +105,10 @@ bool getTime(void *) {
 } 
 
 bool getSensor(void *) {
-  char tempo[10];
-
   if (fromSensor.is_update) {
-    Serial.println("---> New valid data for sensor was read");
     fromSensor.is_update = false;
 
-    sprite.createSprite(170,150);
-    sprite.fillSprite(WS_BLACK);
-    sprite.setTextColor(WS_BLUE);
-
-    sprite.loadFont(arialround14);
-    sprite.setTextDatum(CR_DATUM);
-    sprite.drawString(townName,160,20);
-
-
-    // display Temp & Humi
-    sprite.loadFont(arialround36);
-    sprite.setTextColor(WS_WHITE);
-    sprintf(tempo,"%2d °C",int(fromSensor.t+0.5));
-    sprite.setTextDatum(MC_DATUM);
-    sprite.drawString(tempo,55,75);
-    sprite.loadFont(arialround14);
-    sprintf(tempo,"%2d %%",int(fromSensor.h+0.5));
-    sprite.drawString(tempo,55,110);
-
-    // display batt level
-    drawBatLevel(sprite,120,60,int(fromSensor.b+0.5));
-
-    sprite.pushSprite(150,50);
-    sprite.deleteSprite();
+    drawSensor(fromSensor.t,fromSensor.h,fromSensor.b);
   }
   return true;
 } 
@@ -272,6 +246,35 @@ bool drawTime(void *) {
   sprite.deleteSprite();
 
   return true;
+}
+
+void drawSensor(float t, float h, float b) {
+  char tempo[10];
+
+  sprite.createSprite(170,140);
+  sprite.fillSprite(WS_BLACK);
+  sprite.setTextColor(WS_BLUE);
+
+  sprite.loadFont(arialround14);
+  sprite.setTextDatum(CR_DATUM);
+  sprite.drawString(townName,160,20);
+
+
+  // display Temp & Humi
+  sprite.loadFont(arialround36);
+  sprite.setTextColor(WS_WHITE);
+  sprintf(tempo,"%2d °C",int(fromSensor.t+0.5));
+  sprite.setTextDatum(MC_DATUM);
+  sprite.drawString(tempo,55,75);
+  sprite.loadFont(arialround14);
+  sprintf(tempo,"%2d %%",int(fromSensor.h+0.5));
+  sprite.drawString(tempo,55,110);
+
+  // display batt level
+  drawBatLevel(sprite,120,60,int(fromSensor.b+0.5));
+
+  sprite.pushSprite(150,50);
+  sprite.deleteSprite();
 }
 
 void drawBatLevel(TFT_eSprite &spr,int sprX,int sprY,int level) {

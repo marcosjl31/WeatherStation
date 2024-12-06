@@ -67,6 +67,7 @@ struct DateTime {
 
 // forward declarations
 bool drawTime(void *);
+void drawSensor(float t, float h, float b);
 void drawBatLevel(TFT_eSprite &spr,int sprX,int SprY,int level);
 void drawForecast(int wmo, float minT, float maxT, short rainProba);
 const uint16_t* getIconFromWMO(int wmo);
