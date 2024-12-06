@@ -34,7 +34,8 @@ char static_ip[16] = "192.168.3.10";
 char static_gw[16] = "192.168.3.1";
 char static_mask[16] = "255.255.255.0";
 char static_dns[16] = "192.168.3.1";
-// [Please CHANGE THIS] - Town/Latitude/longitude
+// [Please CHANGE THIS] - TimeZone/Town/Latitude/longitude
+const String timeZone = "Europe%2FParis";
 const String townName = "Toulouse";
 const String townLat = "43.603951";
 const String townLon = "1.444510";
@@ -42,8 +43,10 @@ const String townLon = "1.444510";
 WebServer server(80);
 
 // API Web server for accurate time getTime.
-String timeServer = "https://timeapi.io/api/time/current/zone?timeZone=Europe%2FParis";
-String weatherServer = "";
+String timeServer = "https://timeapi.io/api/time/current/zone?timeZone=" + timeZone;
+String weatherServer = "https://api.open-meteo.com/v1/forecast?latitude=" + townLat + "&longitude=" + townLon
+                       + "&current=weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=1";
+
 const char *days[] = {"DIM","LUN","MAR","MER","JEU","VEN","SAM"};
 const char *months[] = {"JAN","FEV","MAR","AVR","MAI","JUN","JUL","AOU","SEP","OCT","NOV","DEC"};
 ESP32Time rtc(0); 

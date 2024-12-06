@@ -42,7 +42,7 @@ void setup() {
   tft.fillScreen(WS_BLACK);
 
   //--- Tempo pour les tests hors maison
-  rtc.setTime(17, 0, 12, 26, 11, 2024);
+  // rtc.setTime(17, 0, 12, 26, 11, 2024);
 
   fromSensor.t = 11.1; // set dummy values for first time display
   fromSensor.h = 22.2;
@@ -106,7 +106,7 @@ bool getTime(void *) {
 
 bool getSensor(void *) {
   char tempo[10];
-    
+
   if (fromSensor.is_update) {
     Serial.println("---> New valid data for sensor was read");
     fromSensor.is_update = false;
@@ -163,10 +163,10 @@ bool getForecast(void *) {
 
   error = deserializeJson(jsonDoc,payload);
   if (!error) {
-    wmoCode = jsonDoc["dayly.weather_code[0]"];
-    minT = jsonDoc["dayly.temperature_2m_min[0]"];
-    maxT = jsonDoc["dayly.temperature_2m_max[0]"];
-    rainProba = jsonDoc["dayly.precipitation_probability_max[0]"];
+    wmoCode = jsonDoc["current"]["weather_code"]; Serial.print("wmoCode="); Serial.println(wmoCode);
+    minT = jsonDoc["daily"]["temperature_2m_min"][0];
+    maxT = jsonDoc["daily"]["temperature_2m_max"][0];
+    rainProba = jsonDoc["daily"]["precipitation_probability_max"][0];
 
     // display forecast 
     drawForecast(wmoCode,minT,maxT,rainProba);
