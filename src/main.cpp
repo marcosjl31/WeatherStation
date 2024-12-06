@@ -56,9 +56,9 @@ void setup() {
   
   //--- Create Timers for main Weather Station functions
   timer.every(500,drawTime);               // Every 500ms, display time
-  timer.every(15*60*1000,getTime);              // Every 15mn
-  timer.every(30000,getSensor);            // Every 30s
-  timer.every(60000,getForecast);          // Every 60s
+  timer.every(15*60*1000,getTime);         // Every 15mn
+  timer.every(5*60*1000,getSensor);        // Every 5mn
+  timer.every(10*60*1000,getForecast);     // Every 10mn
 }
 
 void loop() {
@@ -88,7 +88,7 @@ bool getTime(void *) {
   httpResponseCode = http.GET();
   if (httpResponseCode > 0){
     payload = http.getString();
-    // Serial.println(httpResponseCode);
+    // Serial.println(httpResponseCode);      // for debug purpose
     // Serial.println(payload);
   } else {
     Serial.print("ERROR: bad HTTP1 request: ");
@@ -111,13 +111,13 @@ bool getSensor(void *) {
     Serial.println("---> New valid data for sensor was read");
     fromSensor.is_update = false;
 
-    sprite.createSprite(200,150);
+    sprite.createSprite(170,150);
     sprite.fillSprite(WS_BLACK);
     sprite.setTextColor(WS_BLUE);
 
     sprite.loadFont(arialround14);
     sprite.setTextDatum(CR_DATUM);
-    sprite.drawString(townName,190,20);
+    sprite.drawString(townName,160,20);
 
 
     // display Temp & Humi
@@ -125,15 +125,15 @@ bool getSensor(void *) {
     sprite.setTextColor(WS_WHITE);
     sprintf(tempo,"%2d °C",int(fromSensor.t+0.5));
     sprite.setTextDatum(MC_DATUM);
-    sprite.drawString(tempo,95,75);
+    sprite.drawString(tempo,55,75);
     sprite.loadFont(arialround14);
     sprintf(tempo,"%2d %%",int(fromSensor.h+0.5));
-    sprite.drawString(tempo,95,110);
+    sprite.drawString(tempo,55,110);
 
     // display batt level
-    drawBatLevel(sprite,160,60,int(fromSensor.b+0.5));
+    drawBatLevel(sprite,120,60,int(fromSensor.b+0.5));
 
-    sprite.pushSprite(120,50);
+    sprite.pushSprite(150,50);
     sprite.deleteSprite();
   }
   return true;
@@ -154,7 +154,7 @@ bool getForecast(void *) {
   httpResponseCode = http.GET();
   if (httpResponseCode > 0){
     payload = http.getString();
-    // Serial.println(httpResponseCode);
+    // Serial.println(httpResponseCode);      // for debug purpose
     // Serial.println(payload);
   } else{
     Serial.print("ERROR: bad HTTP1 request: ");
@@ -163,7 +163,7 @@ bool getForecast(void *) {
 
   error = deserializeJson(jsonDoc,payload);
   if (!error) {
-    wmoCode = jsonDoc["current"]["weather_code"]; Serial.print("wmoCode="); Serial.println(wmoCode);
+    wmoCode = jsonDoc["current"]["weather_code"];
     minT = jsonDoc["daily"]["temperature_2m_min"][0];
     maxT = jsonDoc["daily"]["temperature_2m_max"][0];
     rainProba = jsonDoc["daily"]["precipitation_probability_max"][0];
