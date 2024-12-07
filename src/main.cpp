@@ -4,6 +4,7 @@
 
 //--- Sensor data var
 sensorData  fromSensor;
+int watchDog = 0;
 
 //--- Time object
 auto timer = timer_create_default();
@@ -41,14 +42,10 @@ void setup() {
   tft.setRotation(1);
   tft.fillScreen(WS_BLACK);
 
-  //--- Tempo pour les tests hors maison
-  // rtc.setTime(17, 0, 12, 26, 11, 2024);
-
   fromSensor.t = 11.1; // set dummy values for first time display
   fromSensor.h = 22.2;
   fromSensor.b = 74.4;
-  fromSensor.is_update = true;
-  //--------------------------------------
+  drawSensor(fromSensor.t,fromSensor.h,fromSensor.b,TFT_RED); // using RED color because we still not have real sensor data
 
   drawTime(NULL);
   getSensor(NULL);
@@ -105,10 +102,16 @@ bool getTime(void *) {
 } 
 
 bool getSensor(void *) {
+  watchDog++;
   if (fromSensor.is_update) {
     fromSensor.is_update = false;
+    watchDog = 0;
 
-    drawSensor(fromSensor.t,fromSensor.h,fromSensor.b);
+    drawSensor(fromSensor.t,fromSensor.h,fromSensor.b,WS_WHITE);
+  } else {
+    if (watchDog > 15)
+      // 15*5 mn wihout receiving any thing from sensor, redraw data in red to alert.
+      drawSensor(fromSensor.t,fromSensor.h,fromSensor.b,TFT_RED);
   }
   return true;
 } 
@@ -248,7 +251,7 @@ bool drawTime(void *) {
   return true;
 }
 
-void drawSensor(float t, float h, float b) {
+void drawSensor(float t, float h, float b, short tempColor) {
   char tempo[10];
 
   sprite.createSprite(170,140);
@@ -262,7 +265,7 @@ void drawSensor(float t, float h, float b) {
 
   // display Temp & Humi
   sprite.loadFont(arialround36);
-  sprite.setTextColor(WS_WHITE);
+  sprite.setTextColor(tempColor);
   sprintf(tempo,"%2d °C",int(fromSensor.t+0.5));
   sprite.setTextDatum(MC_DATUM);
   sprite.drawString(tempo,55,75);
