@@ -42,9 +42,9 @@ void setup() {
   tft.setRotation(1);
   tft.fillScreen(WS_BLACK);
 
-  fromSensor.t = 11.1; // set dummy values for first time display
-  fromSensor.h = 22.2;
-  fromSensor.b = 74.4;
+  fromSensor.t = 0.0; // set dummy values for first time display
+  fromSensor.h = 0.0;
+  fromSensor.b = 100;
   drawSensor(fromSensor.t,fromSensor.h,fromSensor.b,TFT_RED); // using RED color because we still not have real sensor data
 
   drawTime(NULL);
@@ -254,7 +254,7 @@ bool drawTime(void *) {
 void drawSensor(float t, float h, float b, short tempColor) {
   char tempo[10];
 
-  sprite.createSprite(170,140);
+  sprite.createSprite(170,136);
   sprite.fillSprite(WS_BLACK);
   sprite.setTextColor(WS_BLUE);
 
