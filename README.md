@@ -16,6 +16,8 @@ This repo contains the code used and the STL files of the case I used to house t
 
 # Code
 
+Code version : 1.0
+
 Code of the project is managed as a PlatformIO project. Communication between TempSensor and Weather
 Station is done using a Web ReST API Server on the station listening to JSON formatted requests 
 from TempSensor (every 20mn; this can be customized as well).
