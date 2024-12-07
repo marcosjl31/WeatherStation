@@ -13,7 +13,7 @@
 #include "ArialRounded36.h"
 #include "weatherIcons.h"
 
-#define VW_Version "v. 0.01"
+#define VW_Version "v. 1.00"
 
 struct sensorData {
   float t = 0.0;                  // temp
