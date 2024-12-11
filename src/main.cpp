@@ -266,15 +266,15 @@ void drawSensor(float t, float h, float b, short tempColor) {
   // display Temp & Humi
   sprite.loadFont(arialround36);
   sprite.setTextColor(tempColor);
-  sprintf(tempo,"%2d °C",int(fromSensor.t+0.5));
+  sprintf(tempo,"%.1f °C",fromSensor.t);
   sprite.setTextDatum(MC_DATUM);
-  sprite.drawString(tempo,55,75);
+  sprite.drawString(tempo,60,75);
   sprite.loadFont(arialround14);
   sprintf(tempo,"%2d %%",int(fromSensor.h+0.5));
-  sprite.drawString(tempo,55,110);
+  sprite.drawString(tempo,60,110);
 
   // display batt level
-  drawBatLevel(sprite,120,60,int(fromSensor.b+0.5));
+  drawBatLevel(sprite,130,60,int(fromSensor.b+0.5));
 
   sprite.pushSprite(150,50);
   sprite.deleteSprite();
