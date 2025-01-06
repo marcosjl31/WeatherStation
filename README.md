@@ -16,7 +16,14 @@ This repo contains the code used and the STL files of the case I used to house t
 
 # Code
 
-Code version : 1.0
+## Configure platformio.ini file accordingly to your CYD board
+
+There are two types of CYD boards: one with a unique USB Port, one with two.
+
+Edit ``platormio.ini``file to define the correct target : cyd or cyd2usb.
+
+
+## Code version : 1.0
 
 Code of the project is managed as a PlatformIO project. Communication between TempSensor and Weather
 Station is done using a Web ReST API Server on the station listening to JSON formatted requests 
@@ -41,4 +48,8 @@ char static_ip[16] = "192.168.3.10";
 char static_gw[16] = "192.168.3.1";
 char static_mask[16] = "255.255.255.0";
 char static_dns[16] = "192.168.3.1";
+
 ```
+# Resources
+
+* [@witnessmeno ESP32-Cheap-Yellow-Display](https://github.com/witnessmenow/ESP32-Cheap-Yellow-Display)
