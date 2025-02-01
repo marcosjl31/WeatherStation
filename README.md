@@ -53,3 +53,7 @@ char static_dns[16] = "192.168.3.1";
 # Resources
 
 * [@witnessmeno ESP32-Cheap-Yellow-Display](https://github.com/witnessmenow/ESP32-Cheap-Yellow-Display)
+
+* [Transparent Sprites - Programming Tutorial (TFT_eSPI library)](https://www.youtube.com/watch?v=U4jOFLFNZBI&t=604s) : explanations on how to create new sprites.
+
+* [Customize Your ESP32 LCD with Any Font Imaginable](https://www.youtube.com/watch?v=4zYaIJxEYaM) : explanations on how to add and use a new font.
